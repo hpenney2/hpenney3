@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>YoutubeExplode.Converter</name>
+    </assembly>
+    <members>
+        <member name="T:YoutubeExplode.Converter.IYoutubeConverter">
+            <summary>
+            Interface for <see cref="T:YoutubeExplode.Converter.YoutubeConverter"/>.
+            </summary>
+        </member>
+        <member name="M:YoutubeExplode.Converter.IYoutubeConverter.DownloadAndProcessMediaStreamsAsync(System.Collections.Generic.IReadOnlyList{YoutubeExplode.Models.MediaStreams.MediaStreamInfo},System.String,System.String,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <summary>
+            Downloads given media streams and processes them into a file using specified format.
+            </summary>
+        </member>
+        <member name="M:YoutubeExplode.Converter.IYoutubeConverter.DownloadVideoAsync(YoutubeExplode.Models.MediaStreams.MediaStreamInfoSet,System.String,System.String,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <summary>
+            Downloads a video to a file using specified format by selecting media streams from the given set.
+            </summary>
+        </member>
+        <member name="M:YoutubeExplode.Converter.IYoutubeConverter.DownloadVideoAsync(System.String,System.String,System.String,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <summary>
+            Downloads a video to a file using specified format.
+            </summary>
+        </member>
+        <member name="M:YoutubeExplode.Converter.IYoutubeConverter.DownloadVideoAsync(System.String,System.String,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <summary>
+            Downloads a video to a file.
+            </summary>
+        </member>
+        <member name="T:YoutubeExplode.Converter.YoutubeConverter">
+            <summary>
+            The entry point for <see cref="N:YoutubeExplode.Converter"/>.
+            </summary>
+        </member>
+        <member name="M:YoutubeExplode.Converter.YoutubeConverter.#ctor(YoutubeExplode.IYoutubeClient,System.String)">
+            <summary>
+            Creates an instance of <see cref="T:YoutubeExplode.Converter.YoutubeConverter"/>.
+            </summary>
+        </member>
+        <member name="M:YoutubeExplode.Converter.YoutubeConverter.#ctor(YoutubeExplode.IYoutubeClient)">
+            <summary>
+            Creates an instance of <see cref="T:YoutubeExplode.Converter.YoutubeConverter"/>.
+            </summary>
+        </member>
+        <member name="M:YoutubeExplode.Converter.YoutubeConverter.#ctor">
+            <summary>
+            Creates an instance of <see cref="T:YoutubeExplode.Converter.YoutubeConverter"/>.
+            </summary>
+        </member>
+        <member name="M:YoutubeExplode.Converter.YoutubeConverter.DownloadAndProcessMediaStreamsAsync(System.Collections.Generic.IReadOnlyList{YoutubeExplode.Models.MediaStreams.MediaStreamInfo},System.String,System.String,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:YoutubeExplode.Converter.YoutubeConverter.DownloadVideoAsync(YoutubeExplode.Models.MediaStreams.MediaStreamInfoSet,System.String,System.String,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:YoutubeExplode.Converter.YoutubeConverter.DownloadVideoAsync(System.String,System.String,System.String,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+        <member name="M:YoutubeExplode.Converter.YoutubeConverter.DownloadVideoAsync(System.String,System.String,System.IProgress{System.Double},System.Threading.CancellationToken)">
+            <inheritdoc />
+        </member>
+    </members>
+</doc>
