@@ -82,7 +82,7 @@ namespace hpenney2clone.Modules
 
             if (!result.IsSuccess)
             {
-                return CustomResult.FromError($"Couldn't find a command named **{command}**.");
+                return Result.FromError($"Couldn't find a command named **{command}**.");
             }
 
             string prefix = "~";
@@ -130,7 +130,7 @@ namespace hpenney2clone.Modules
             }
 
             await ReplyAsync("", embed: embed.Build());
-            return CustomResult.FromSuccess();
+            return Result.FromSuccess();
         }
     }
 }

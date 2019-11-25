@@ -54,13 +54,13 @@ namespace hpenney2clone.Modules
         //[Summary("Plays Bruh Sound Effect #2 in your current voice channel.")]
 
 
-        public Dictionary<string, IAudioClient> aClients = new Dictionary<string, IAudioClient>();
+        public Dictionary<string, AudioOutStream> aStreams = new Dictionary<string, AudioOutStream>();
         [Command("play", RunMode = RunMode.Async), Alias("music")]
         public async Task<RuntimeResult> MusicAsync([Remainder] string search)
         {
             var channel = (Context.User as IGuildUser)?.VoiceChannel;
-            if (Context.Guild.CurrentUser.VoiceChannel != null) { return CustomResult.FromError("I'm already in a voice channel!"); }
-            if (channel == null) { return CustomResult.FromError("You need to be in a voice channel to do that."); }
+            if (Context.Guild.CurrentUser.VoiceChannel != null) { return Result.FromError("I'm already in a voice channel!"); }
+            if (channel == null) { return Result.FromError("You need to be in a voice channel to do that."); }
 
             var message = await ReplyAsync($"searching for `{search}` on YouTube...");
 
@@ -68,9 +68,9 @@ namespace hpenney2clone.Modules
             var vidSearch = await client.SearchVideosAsync(search, 1) as List<YoutubeExplode.Models.Video>;
             var searchArray = vidSearch.ToArray();
             if (searchArray.Length <= 0)
-                return CustomResult.FromError($"No videos could be found for the query `{search}`");
+                return Result.FromError($"No videos could be found for the query `{search}`");
             if (searchArray[0].Duration > TimeSpan.FromHours(1))
-                return CustomResult.FromError("Videos must be no longer than one hour be played.");
+                return Result.FromError("Videos must be no longer than one hour be played.");
 
             await message.ModifyAsync(msg => msg.Content = $"Found video! (`{searchArray[0].Title}` uploaded by `{searchArray[0].Author}`)\nPreparing audio...");
             var info = await client.GetVideoMediaStreamInfosAsync(searchArray[0].Id);
@@ -79,26 +79,31 @@ namespace hpenney2clone.Modules
 
             await message.ModifyAsync(msg => msg.Content = $"Joining channel and playing `{searchArray[0].Title}`");
             var aClient = await channel.ConnectAsync();
-            aClients.Add(Context.Guild.Id.ToString(), aClient);
 
             using (var ffmpeg = CreateStream($"song_{Context.Guild.Id}.opus"))
             using (var output = ffmpeg.StandardOutput.BaseStream)
             using (var discord = aClient.CreatePCMStream(AudioApplication.Mixed))
             {
-                try { await output.CopyToAsync(discord); }
+                try { aStreams.Add(Context.Guild.Id.ToString(), discord); await output.CopyToAsync(discord); }
                 finally { await discord.FlushAsync(); }
             }
 
             await Context.Guild.CurrentUser.VoiceChannel.DisconnectAsync();
-            return CustomResult.FromSuccess();
+            return Result.FromSuccess();
         }
 
         [Command("disconnect", RunMode = RunMode.Async), Alias("leave", "dc")]
         public async Task<RuntimeResult> DiscAsync()
         {
             var channel = (Context.User as IGuildUser)?.VoiceChannel;
-            if (Context.Guild.CurrentUser.VoiceChannel == null) { return CustomResult.FromError("I'm not in a voice channel!"); }
-            if (channel != Context.Guild.CurrentUser.VoiceChannel) { return CustomResult.FromError($"You need to be in my voice channel (`{Context.Guild.CurrentUser.VoiceChannel.Name}`) to do that."); }
+            if (Context.Guild.CurrentUser.VoiceChannel == null) { return Result.FromError("I'm not in a voice channel!"); }
+            if (channel != Context.Guild.CurrentUser.VoiceChannel) { return Result.FromError($"You need to be in my voice channel (`{Context.Guild.CurrentUser.VoiceChannel.Name}`) to do that."); }
+            if (aStreams.TryGetValue(Context.Guild.Id.ToString(), out AudioOutStream aStream)) { }
+            else
+                return Result.FromStrangeError("Audio client is missing from dictionary aClients.");
+            await aStream.FlushAsync();
+            await Context.Guild.CurrentUser.VoiceChannel.DisconnectAsync();
+            return Result.FromSuccess();
         }
         
     }

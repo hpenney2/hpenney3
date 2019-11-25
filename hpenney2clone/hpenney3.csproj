@@ -196,7 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="%28no longer used%29 CommandHandler.cs" />
-    <Compile Include="CustomResult.cs" />
+    <Compile Include="Result.cs" />
     <Compile Include="Modules\Echo.cs" />
     <Compile Include="Modules\Information.cs" />
     <Compile Include="Modules\Jackbox.cs" />
