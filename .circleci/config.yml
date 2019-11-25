@@ -14,7 +14,7 @@ jobs:
           keys:
             - dotnet-packages-v1-{{ checksum "circleci-demo-windows.csproj" }}
       - run:
-          name: "Add Discord.Addons.Interactive package
+          name: "Add Discord.Addons.Interactive package"
           command: dotnet add package Discord.Addons.Interactive -s https://www.myget.org/F/foxbot-discord-addons/api/v3/index.json
       - run:
           name: "Install project dependencies"
