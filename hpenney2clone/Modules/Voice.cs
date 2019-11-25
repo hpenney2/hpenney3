@@ -93,12 +93,13 @@ namespace hpenney2clone.Modules
             return CustomResult.FromSuccess();
         }
 
-        /*
         [Command("disconnect", RunMode = RunMode.Async), Alias("leave", "dc")]
         public async Task<RuntimeResult> DiscAsync()
         {
-
+            var channel = (Context.User as IGuildUser)?.VoiceChannel;
+            if (Context.Guild.CurrentUser.VoiceChannel == null) { return CustomResult.FromError("I'm not in a voice channel!"); }
+            if (channel != Context.Guild.CurrentUser.VoiceChannel) { return CustomResult.FromError($"You need to be in my voice channel (`{Context.Guild.CurrentUser.VoiceChannel.Name}`) to do that."); }
         }
-        */
+        
     }
 }
