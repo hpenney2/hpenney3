@@ -25,9 +25,9 @@ jobs:
           key: dotnet-packages-v1-{{ checksum "hpenney3.csproj" }}
       - run:
           name: "Run Build step"
-          command: dotnet.exe publish -c Release -f net48
+          command: dotnet.exe publish -c Release -f net461
 #      - run:
 #          name: "Test the executable"
 #          command: .\bin\Release\netcoreapp2.1\win10-x64\publish\circleci-demo-windows.exe
       - store_artifacts:
-          path: .\bin\Release\net48\hpenney2clone.exe
+          path: .\bin\Release\net461\hpenney2clone.exe
