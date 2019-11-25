@@ -30,4 +30,4 @@ jobs:
 #          name: "Test the executable"
 #          command: .\bin\Release\netcoreapp2.1\win10-x64\publish\circleci-demo-windows.exe
       - store_artifacts:
-          path: .hpenney2clone\bin\Release\net461\hpenney2clone.exe
+          path: .\hpenney2clone\bin\Release\net461\hpenney2clone.exe
