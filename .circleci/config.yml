@@ -12,7 +12,7 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - dotnet-packages-v1-{{ checksum "circleci-demo-windows.csproj" }}
+            - dotnet-packages-v1-{{ checksum "hpenney3.csproj" }}
       - run:
           name: "Add foxbot Discord addons source"
           command: nuget source Add -Name "foxbot Discord addons" -Source https://www.myget.org/F/foxbot-discord-addons/api/v3/index.json
@@ -30,4 +30,4 @@ jobs:
 #          name: "Test the executable"
 #          command: .\bin\Release\netcoreapp2.1\win10-x64\publish\circleci-demo-windows.exe
       - store_artifacts:
-          path: .\bin\Release\netcoreapp2.1\win10-x64\publish\circleci-demo-windows.exe
+          path: .\bin\Debug\hpenney2clone.exe
