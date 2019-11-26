@@ -31,11 +31,12 @@ namespace hpenney2clone
             _client.Log += Log;
             _commands.Log += Log;
             var betaMode = false;
-            string tokenName;
-            if (betaMode) tokenName = "betatoken.txt"; else tokenName = "token.txt";
-            var runDirectory = Directory.GetCurrentDirectory();
-            var tokenPath = Path.GetFullPath(Path.Combine(runDirectory, @"..\..\"));
-            var token = File.ReadAllText(tokenPath += tokenName/*@"C:\Users\hunte\Desktop\PennBot\hpenney2's clone\hpenney2clone\hpenney2clone\token.txt"*/);
+            string tokenType;
+            if (betaMode) tokenType = "token"; else tokenType = "beta_token";
+            //if (betaMode) tokenName = "betatoken.txt"; else tokenName = "token.txt";
+            //var runDirectory = Directory.GetCurrentDirectory();
+            //var tokenPath = Path.GetFullPath(Path.Combine(runDirectory, @"..\..\"));
+            var token = File.ReadAllText(Environment.GetEnvironmentVariable(tokenType)/*@"C:\Users\hunte\Desktop\PennBot\hpenney2's clone\hpenney2clone\hpenney2clone\token.txt"*/);
             await _client.LoginAsync(Discord.TokenType.Bot, token);
             await _client.StartAsync();
             await GetCommandsAsync();
