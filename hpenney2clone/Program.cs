@@ -7,9 +7,6 @@ using Discord.Addons.Interactive;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Discord;
-//using Discord.Addons.PrefixService;
-//using LiteDB;
-//using LiteDB.Shell;
 
 namespace hpenney2clone
 {
@@ -25,7 +22,6 @@ namespace hpenney2clone
         public async Task MainAsync()
         {
             _client = new DiscordShardedClient(new DiscordSocketConfig { TotalShards = 5 });
-            //_prefixDb = new LiteDatabase(@"C:\Users\hunte\Desktop\PennBot\hpenney2's clone\hpenney2clone\hpenney2clone\PrefixDatabase.db");
             _services = BuildServiceProvider();
             _commands = new CommandService(new CommandServiceConfig { LogLevel = Discord.LogSeverity.Info, CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async});
             _client.Log += Log;
@@ -36,7 +32,7 @@ namespace hpenney2clone
             //if (betaMode) tokenName = "betatoken.txt"; else tokenName = "token.txt";
             //var runDirectory = Directory.GetCurrentDirectory();
             //var tokenPath = Path.GetFullPath(Path.Combine(runDirectory, @"..\..\"));
-            var token = File.ReadAllText(Environment.GetEnvironmentVariable(tokenType)/*@"C:\Users\hunte\Desktop\PennBot\hpenney2's clone\hpenney2clone\hpenney2clone\token.txt"*/);
+            var token = File.ReadAllText(Environment.GetEnvironmentVariable(tokenType));
             await _client.LoginAsync(Discord.TokenType.Bot, token);
             await _client.StartAsync();
             await GetCommandsAsync();
