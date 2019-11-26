@@ -50,12 +50,8 @@ namespace hpenney2clone.Modules
                 }
         */
 
-        //[Command("bruh", RunMode = RunMode.Async), Alias("soundeffect2")]
-        //[Summary("Plays Bruh Sound Effect #2 in your current voice channel.")]
-
-
         public Dictionary<string, AudioOutStream> aStreams = new Dictionary<string, AudioOutStream>();
-        [Command("play", RunMode = RunMode.Async), Alias("music")]
+        [Command("play", RunMode = RunMode.Async), Alias("music"), RequireContext(ContextType.Guild)]
         public async Task<RuntimeResult> MusicAsync([Remainder] string search)
         {
             var channel = (Context.User as IGuildUser)?.VoiceChannel;
