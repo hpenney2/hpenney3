@@ -154,5 +154,16 @@ namespace hpenney2clone.Modules
             var shard = (serverId >> 22) % 5;
             await ReplyAsync($"server id **{serverId.ToString()}** is running on **shard {shard.ToString()}** if the bot is in that server");
         }
+
+        [Command("support"), Alias("server"), Summary("Gives an invite link to the offical hpenney3 server.")]
+        public async Task GiveServerAsync()
+        {
+            var embed = new EmbedBuilder
+            {
+                Title = "Official Server",
+                Description = "Here you can get support, report bugs, get updates on our GitHub repository, and get announcements for my Twitch channel.",
+                Url = "https://discord.gg/bkkBnMd"
+            };
+        }
     }
 }

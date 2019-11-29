@@ -76,7 +76,7 @@ namespace hpenney2clone
             }
 
             var commandName = command.IsSpecified ? command.Value.Name : "Unknown Command";
-            await Log(new LogMessage(LogSeverity.Info, "Command", $"A command executed successfully. Message: [{context.Message.Content}] | Guild: [{context.Guild.Name} ({context.Guild.Id})]"));
+            await Log(new LogMessage(LogSeverity.Info, "Command", $"A command executed successfully. Message: [{context.Message.Content}] | Command: [{commandName}] | Guild: [{context.Guild.Name} ({context.Guild.Id})]"));
         }
 
         private async Task HandleCommandAsync(SocketMessage arg)
