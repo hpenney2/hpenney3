@@ -164,6 +164,8 @@ namespace hpenney2clone.Modules
                 Description = "Here you can get support, report bugs, get updates on our GitHub repository, and get announcements for my Twitch channel.",
                 Url = "https://discord.gg/bkkBnMd"
             };
+
+            await ReplyAsync("", embed: embed.Build());
         }
     }
 }
