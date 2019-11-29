@@ -5,9 +5,6 @@ branches:
   only:
   - build
 image: Visual Studio 2019
-environment:
-  WEBHOOK_URL:
-    secure: xkaeYEPuVZ3EPgoFzIqvfz/SCiOM7zPx31ZUMVw32+aPdnFtDLKFRagP36ErsJee7yZewnzh7GdDojMpW82y0maMcGRu8Z1zzf4LIVF8mTWls6Xg66UDzvZKFsyj0dSruSZaZQedUoUCONtn24UaaRs7rEDCk9Pc2negyxctAt8=
 build_script:
 - cmd: >-
     nuget source Add -Name "foxbot Discord addons" -Source https://www.myget.org/F/foxbot-discord-addons/api/v3/index.json
@@ -15,9 +12,3 @@ build_script:
     dotnet build -c Release -f net461
 artifacts:
 - path: '**\bin\Release\hpenney2clone.exe'
-on_success:
-  - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
-  - ps: ./send.ps1 success $env:WEBHOOK_URL
-on_failure:
-  - ps: Invoke-RestMethod https://raw.githubusercontent.com/DiscordHooks/appveyor-discord-webhook/master/send.ps1 -o send.ps1
-  - ps: ./send.ps1 failure $env:WEBHOOK_URL
