@@ -32,7 +32,7 @@ namespace hpenney2clone
             //if (betaMode) tokenName = "betatoken.txt"; else tokenName = "token.txt";
             //var runDirectory = Directory.GetCurrentDirectory();
             //var tokenPath = Path.GetFullPath(Path.Combine(runDirectory, @"..\..\"));
-            var token = File.ReadAllText(Environment.GetEnvironmentVariable(tokenType));
+            var token = Environment.GetEnvironmentVariable(tokenType);
             await _client.LoginAsync(Discord.TokenType.Bot, token);
             await _client.StartAsync();
             await GetCommandsAsync();

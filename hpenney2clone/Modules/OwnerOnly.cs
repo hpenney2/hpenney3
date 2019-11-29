@@ -6,7 +6,7 @@ using Discord.Addons.Interactive;
 
 namespace hpenney2clone.Modules
 {
-    public class Kill : InteractiveBase<ShardedCommandContext>
+    public class OwnerOnly : InteractiveBase<ShardedCommandContext>
     {
         public InteractiveService IntServ { get; set; }
         [Command("kill", RunMode = RunMode.Async),Alias("exit"),RequireOwner(ErrorMessage = "only hpenney2 has a high enough power level to kill me")]
