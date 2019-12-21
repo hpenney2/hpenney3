@@ -1,0 +1,21 @@
+version: 1.0.{build}
+pull_requests:
+  do_not_increment_build_number: true
+branches:
+  only:
+  - build
+image: Visual Studio 2019
+artifacts:
+- path: '**\bin\Release\net461\hpenney2clone.exe'
+- path: '**\net461\ffmpeg.exe'
+- path: '**\net461\opus.dll'
+- path: '**\net461\libsodium.dll'
+build:
+  publish_wap_beanstalk: true
+build_script:
+- cmd: >-
+    nuget source Add -Name "foxbot Discord addons" -Source https://www.myget.org/F/foxbot-discord-addons/api/v3/index.json
+    
+    dotnet restore
+    
+    dotnet build -c Release -f net461

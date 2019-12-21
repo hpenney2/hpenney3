@@ -7,6 +7,13 @@ using Discord.Addons.Interactive;
 using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 using Discord;
+using System.Collections.Generic;
+using System.Linq;
+using Discord.Audio;
+using System.Threading;
+using RestSharp;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace hpenney2clone
 {
@@ -17,6 +24,7 @@ namespace hpenney2clone
 
         private DiscordShardedClient _client;
         private CommandService _commands;
+        private bool betaMode;
         //public LiteDatabase _prefixDb;
 
         public async Task MainAsync()
@@ -26,20 +34,20 @@ namespace hpenney2clone
             _commands = new CommandService(new CommandServiceConfig { LogLevel = Discord.LogSeverity.Info, CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async});
             _client.Log += Log;
             _commands.Log += Log;
-            var betaMode = false;
+            betaMode = true;
             string tokenType;
-            if (betaMode) tokenType = "token"; else tokenType = "beta_token";
+            if (!betaMode) tokenType = "token"; else tokenType = "beta_token";
             //if (betaMode) tokenName = "betatoken.txt"; else tokenName = "token.txt";
             //var runDirectory = Directory.GetCurrentDirectory();
             //var tokenPath = Path.GetFullPath(Path.Combine(runDirectory, @"..\..\"));
-            var token = File.ReadAllText(Environment.GetEnvironmentVariable(tokenType));
+            var token = Environment.GetEnvironmentVariable(tokenType);
             await _client.LoginAsync(Discord.TokenType.Bot, token);
             await _client.StartAsync();
             await GetCommandsAsync();
             _client.ShardReady += SetStatus;
-            _client.JoinedGuild += SetStatusGuild;
+            //_client.JoinedGuild += SetStatusGuild;
             _client.JoinedGuild += GuildJoinLog;
-            _client.LeftGuild += SetStatusGuild;
+            //_client.LeftGuild += SetStatusGuild;
             _client.LeftGuild += GuildLeaveLog;
 
             await Task.Delay(-1);
@@ -47,6 +55,7 @@ namespace hpenney2clone
 
         public IServiceProvider BuildServiceProvider() => new ServiceCollection()
             .AddSingleton(new InteractiveService(_client))
+            //.AddSingleton(new AudioService())
             .BuildServiceProvider();
 
         private IServiceProvider _services;
@@ -76,9 +85,11 @@ namespace hpenney2clone
             }
 
             var commandName = command.IsSpecified ? command.Value.Name : "Unknown Command";
-            await Log(new LogMessage(LogSeverity.Info, "Command", $"A command executed successfully. Message: [{context.Message.Content}] | Guild: [{context.Guild.Name} ({context.Guild.Id})]"));
+            await Log(new LogMessage(LogSeverity.Info, "Command", $"A command executed successfully. Message: [{context.Message.Content}] | Command: [{commandName}] | Guild: [{context.Guild.Name} ({context.Guild.Id})]"));
         }
 
+        // Anyone who makes contributions can be added to the tester list here.
+        ulong[] betaAllowedIds = { 142664159048368128, 336980669471391754 };
         private async Task HandleCommandAsync(SocketMessage arg)
         {
             // Don't process the command if it was a system message
@@ -96,6 +107,11 @@ namespace hpenney2clone
 
             // Create a WebSocket-based command context based on the message
             var context = new ShardedCommandContext(_client, message);
+            if (betaMode && !betaAllowedIds.Contains(context.User.Id))
+            {
+                await context.Channel.SendMessageAsync("Only a few people can use the test/beta version of hpenney3 right now, sorry.");
+                return;
+            }
 
             // Execute the command with the command context we just
             // created, along with the service provider for precondition checks.
@@ -120,20 +136,54 @@ namespace hpenney2clone
         }
 
 
-        private async Task SetStatusGuild(SocketGuild guild)
+        /*private async Task SetStatusGuild(SocketGuild guild)
         {
-            var gCount = _client.Guilds.Count;
+            /*var gCount = _client.Guilds.Count;
 
             foreach (DiscordSocketClient shard in _client.Shards)
             {
-                await shard.SetActivityAsync(new Discord.Game($"hpenney2 | ~help for commands | Shard {shard.ShardId} | {gCount} servers |"/*"hpenney2 in " + _client.Guilds.Count + " servers"*/, Discord.ActivityType.Watching));
+                await shard.SetActivityAsync(new Game($"hpenney2 | ~help for commands | Shard {shard.ShardId} | {gCount} servers |"/*"hpenney2 in " + _client.Guilds.Count + " servers"*//*, Discord.ActivityType.Watching));
             }
-        }
+        }*/
 
         private async Task SetStatus(DiscordSocketClient shard)
         {
+            Task.Run(() => SetStatusATree(shard));
+        }
+
+        private async Task SetStatusATree(DiscordSocketClient shard)
+        {
             var gCount = _client.Guilds.Count;
-            await shard.SetActivityAsync(new Discord.Game($"hpenney2 | ~help for commands | Shard {shard.ShardId} | {gCount} servers |", Discord.ActivityType.Watching));
+            var client = new RestClient("https://teamtrees.p.rapidapi.com/status");
+            var request = new RestRequest(Method.GET);
+            request.AddHeader("x-rapidapi-host", "teamtrees.p.rapidapi.com");
+            request.AddHeader("x-rapidapi-key", "55e790cf59msh2137850e17331e7p1fd990jsn63303f8604dc");
+            SocketGuildChannel channel;
+            if (shard.ShardId == 2)
+                channel = shard.GetGuild(636687065429442579).GetChannel(657667707134804008);
+            else
+                channel = null;
+            while (true)
+            {
+                await shard.SetActivityAsync(new Game($"hpenney2 | ~help for commands | Shard {shard.ShardId} | {gCount} servers |", Discord.ActivityType.Watching));
+                if (shard.ShardId == 2)
+                {
+                    string ftreeCount = null;
+                    IRestResponse response = client.Execute(request);
+                    Dictionary<string, string> trees;
+                    if (response.StatusCode == System.Net.HttpStatusCode.OK)
+                    {
+                        var jsonObj = JObject.Parse(response.Content);
+                        trees = jsonObj.ToObject<Dictionary<string, string>>();
+                        trees.TryGetValue("trees", out ftreeCount);
+                        ftreeCount = $"{Convert.ToUInt64(ftreeCount):n0}";
+                    }
+                    else
+                        ftreeCount = "(error getting tree count)";
+                    await channel.ModifyAsync(c => c.Name = $"🌲 {ftreeCount}");
+                }
+                await Task.Delay(TimeSpan.FromSeconds(15));
+            }
         }
 
         private async Task GuildJoinLog(SocketGuild guild)
