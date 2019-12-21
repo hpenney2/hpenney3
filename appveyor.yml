@@ -8,12 +8,6 @@ image: Visual Studio 2019
 artifacts:
 - path: '**\bin\Release\net461\hpenney2clone.exe'
   type: ElasticBeanstalkPackage
-- path: '**\net461\ffmpeg.exe'
-  type: ElasticBeanstalkPackage
-- path: '**\net461\opus.dll'
-  type: ElasticBeanstalkPackage
-- path: '**\net461\libsodium.dll'
-  type: ElasticBeanstalkPackage
 build:
   publish_wap_beanstalk: true
 build_script:
