@@ -5,11 +5,6 @@ branches:
   only:
   - build
 image: Visual Studio 2019
-build_script:
-- cmd: >-
-    nuget source Add -Name "foxbot Discord addons" -Source https://www.myget.org/F/foxbot-discord-addons/api/v3/index.json
-
-    dotnet build -c Release -f net461
 artifacts:
 - path: '**\hpenney2clone.exe'
 - path: '**\ffmpeg.exe'
@@ -17,3 +12,10 @@ artifacts:
 - path: '**\libsodium.dll'
 build:
   publish_wap_beanstalk: true
+build_script:
+- cmd: >-
+    nuget source Add -Name "foxbot Discord addons" -Source https://www.myget.org/F/foxbot-discord-addons/api/v3/index.json
+    
+    dotnet restore
+    
+    dotnet build -c Release -f net461
