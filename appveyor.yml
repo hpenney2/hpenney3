@@ -6,10 +6,10 @@ branches:
   - build
 image: Visual Studio 2019
 artifacts:
-- path: '**\hpenney2clone.exe'
-- path: '**\ffmpeg.exe'
-- path: '**\opus.dll'
-- path: '**\libsodium.dll'
+- path: '**\bin\Release\net461\hpenney2clone.exe'
+- path: '**\net461\ffmpeg.exe'
+- path: '**\net461\opus.dll'
+- path: '**\net461\libsodium.dll'
 build:
   publish_wap_beanstalk: true
 build_script:
