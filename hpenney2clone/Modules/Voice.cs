@@ -10,6 +10,7 @@ using YoutubeExplode.Converter;
 using System.Diagnostics;
 using System.Collections.Generic;
 using YoutubeExplode.Models.MediaStreams;
+using System.Threading;
 
 namespace hpenney2clone.Modules
 {
@@ -50,7 +51,32 @@ namespace hpenney2clone.Modules
                 }
         */
 
-        public Dictionary<string, AudioOutStream> aStreams = new Dictionary<string, AudioOutStream>();
+
+        public Dictionary<ulong, CancellationTokenSource> pauseCancelTokens = new Dictionary<ulong, CancellationTokenSource>();
+        public Dictionary<ulong, bool> pauseBools = new Dictionary<ulong, bool>();
+        private async Task PausableCopyToAsync(Stream source, Stream destination, ulong guildId, int buffersize)
+        {
+            byte[] buffer = new byte[buffersize];
+            int count;
+            pauseCancelTokens.TryGetValue(guildId, out CancellationTokenSource token);
+
+            while ((count = await source.ReadAsync(buffer, 0, buffersize, token.Token).ConfigureAwait(false)) > 0)
+            {
+                pauseBools.TryGetValue(guildId, out bool _pause);
+                if (_pause)
+                {
+                    try
+                    {
+                        await Task.Delay(Timeout.Infinite, token.Token);
+                    }
+                    catch (OperationCanceledException) { }
+                }
+
+                await destination.WriteAsync(buffer, 0, count, token.Token).ConfigureAwait(false);
+            }
+        }
+
+        public Dictionary<ulong, AudioOutStream> aStreams = new Dictionary<ulong, AudioOutStream>();
         [Command("play", RunMode = RunMode.Async), Alias("music"), RequireContext(ContextType.Guild)]
         public async Task<RuntimeResult> MusicAsync([Remainder] string search)
         {
@@ -80,7 +106,14 @@ namespace hpenney2clone.Modules
             using (var output = ffmpeg.StandardOutput.BaseStream)
             using (var discord = aClient.CreatePCMStream(AudioApplication.Mixed))
             {
-                try { aStreams.Add(Context.Guild.Id.ToString(), discord); await output.CopyToAsync(discord); }
+                try 
+                { 
+                    aStreams.Add(Context.Guild.Id, discord);
+                    pauseCancelTokens.Add(Context.Guild.Id, new CancellationTokenSource());
+                    pauseBools.Add(Context.Guild.Id, false);
+                    await PausableCopyToAsync(output, discord, Context.Guild.Id, 4096);
+                }
+
                 finally { await discord.FlushAsync(); }
             }
 
@@ -94,7 +127,7 @@ namespace hpenney2clone.Modules
             var channel = (Context.User as IGuildUser)?.VoiceChannel;
             if (Context.Guild.CurrentUser.VoiceChannel == null) { return Result.FromError("I'm not in a voice channel!"); }
             if (channel != Context.Guild.CurrentUser.VoiceChannel) { return Result.FromError($"You need to be in my voice channel (`{Context.Guild.CurrentUser.VoiceChannel.Name}`) to do that."); }
-            if (aStreams.TryGetValue(Context.Guild.Id.ToString(), out AudioOutStream aStream)) { }
+            if (aStreams.TryGetValue(Context.Guild.Id, out AudioOutStream aStream)) { }
             else
                 return Result.FromStrangeError("Audio client is missing from dictionary aClients.");
             await aStream.FlushAsync();
@@ -102,5 +135,17 @@ namespace hpenney2clone.Modules
             return Result.FromSuccess();
         }
         
+        /*[Command("vcdebug"), RequireOwner(ErrorMessage = "This is a debug command exclusive to the owner.")]
+        public async Task VcDebugAsync()
+        {
+            var contains = aStreams.ContainsKey(Context.Guild.Id);
+            await ReplyAsync(contains.ToString());
+        }*/
+
+        /*[Command("pause"), Summary("Pauses the current video playing.")]
+        public async Task<RuntimeResult> PauseAudioAsync()
+        {
+            if (!pauseBools.ContainsKey())
+        }*/
     }
 }

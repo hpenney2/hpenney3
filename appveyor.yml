@@ -11,4 +11,9 @@ build_script:
 
     dotnet build -c Release -f net461
 artifacts:
-- path: '**\bin\Release\hpenney2clone.exe'
+- path: '**\hpenney2clone.exe'
+- path: '**\ffmpeg.exe'
+- path: '**\opus.dll'
+- path: '**\libsodium.dll'
+build:
+  publish_wap_beanstalk: true

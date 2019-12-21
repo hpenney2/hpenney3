@@ -161,11 +161,10 @@ namespace hpenney2clone.Modules
             var embed = new EmbedBuilder
             {
                 Title = "Official Server",
-                Description = "Here you can get support, report bugs, get updates on our GitHub repository, and get announcements for my Twitch channel.",
-                Url = "https://discord.gg/bkkBnMd"
+                Description = "Here you can get support, report bugs, get updates on our GitHub repository, and get announcements for my Twitch channel.\nJust click the link above to join!"
             };
 
-            await ReplyAsync("", embed: embed.Build());
+            await ReplyAsync("Join our server @ https://discord.gg/bkkBnMd", embed: embed.Build());
         }
     }
 }
