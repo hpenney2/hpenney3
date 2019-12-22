@@ -34,7 +34,7 @@ namespace hpenney2clone
             _commands = new CommandService(new CommandServiceConfig { LogLevel = Discord.LogSeverity.Info, CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async});
             _client.Log += Log;
             _commands.Log += Log;
-            betaMode = true;
+            betaMode = false;
             string tokenType;
             if (!betaMode) tokenType = "token"; else tokenType = "beta_token";
             //if (betaMode) tokenName = "betatoken.txt"; else tokenName = "token.txt";
