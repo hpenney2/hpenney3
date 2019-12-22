@@ -15,9 +15,8 @@ build_script:
 - cmd: >-
     nuget source Add -Name "foxbot Discord addons" -Source https://www.myget.org/F/foxbot-discord-addons/api/v3/index.json
     
-    
     dotnet restore
     
-    powershell.exe -nologo -noprofile -command "& { Add-Type -A 'System.IO.Compression.FileSystem'; [IO.Compression.ZipFile]::ExtractToDirectory('source.zip', '.'); }"
+    powershell Compress-Archive -Path ./ -DestinationPath ./source.zip
     
     dotnet build -c Release -f net461
